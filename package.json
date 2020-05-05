@@ -1,0 +1,19 @@
+{
+  "name": "eew",
+  "version": "1.0.0",
+  "description": "Official EEW Botting library.",
+  "main": "eew.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "eew",
+    "everybody",
+    "edits",
+    "worlds",
+    "everybody",
+    "edits"
+  ],
+  "author": "SirJosh3917",
+  "license": "MIT"
+}
