@@ -123,11 +123,6 @@ export class PortalData {
 }
 
 const emptyDeserialize = (raw) => ({raw});
-const emptySerialize = class {
-  serialize() {
-    return [];
-  }
-}
 
 export var Messages = {
   deserializeScopelessOnSelfInfo: (raw) => {
@@ -155,6 +150,7 @@ export var Messages = {
   },
   ScopelessNotify: class {
     constructor(message) {
+      this.messageType = 29 /* Notify */;
       this.message = message;
     }
     serialize() {
@@ -191,17 +187,39 @@ export var Messages = {
     playersOnline: raw[0],
     roomsOnline: raw[1],
   }),
-  LobbyLoadRooms: emptySerialize,
+  LobbyLoadRooms: class {
+    constructor() {
+      this.messageType = 2 /* LoadRooms */;
+    }
+    serialize() {
+      return [];
+    }
+  },
   LobbyRoomConnect: class {
     constructor(id) {
-      this.id = id
+      this.messageType = 0 /* RoomConnect */;
+      this.id = id;
     }
     serialize() {
       return ["world", this.id];
     }
   },
-  LobbyRoomDisconnect: emptySerialize,
-  LobbyLoadStats: emptySerialize,
+  LobbyRoomDisconnect: class {
+    constructor() {
+      this.messageType = 1 /* RoomDisconnect */;
+    }
+    serialize() {
+      return [];
+    }
+  },
+  LobbyLoadStats: class {
+    constructor() {
+      this.messageType = 3 /* LoadStats */;
+    }
+    serialize() {
+      return [];
+    }
+  },
   deserializeRoomOnNotify: (raw) => ({
     raw,
     message: raw[0]
@@ -342,9 +360,17 @@ export var Messages = {
     raw,
     canZoom: raw[0],
   }),
-  RoomPing: emptySerialize,
+  RoomPing: class {
+    constructor() {
+      this.messageType = 1 /* Ping */;
+    }
+    serialize() {
+      return [];
+    }
+  },
   RoomInit: class {
     constructor(timeSinceCreation) {
+      this.messageType = 0 /* Init */;
       this.timeSinceCreation = timeSinceCreation || 0;
     }
     serialize() {
@@ -369,6 +395,7 @@ export var Messages = {
       centerX, centerY,
       blockSide,
       space, pressedSpace) {
+      this.messageType = 8 /* PlayerMove */;
       this.t0 = t0;
       this.t1 = t1;
       this.arrowKeyX = arrowKeyX;
@@ -410,9 +437,17 @@ export var Messages = {
       ];
     }
   },
-  RoomPlayerGod: emptySerialize,
+  RoomPlayerGod: class {
+    constructor() {
+      this.messageType = 10 /* PlayerGod */;
+    }
+    serialize() {
+      return [];
+    }
+  },
   RoomPlayerSmiley: class {
     constructor(smiley) {
+      this.messageType = 9 /* PlayerSmiley */;
       this.smiley = smiley;
     }
     serialize() {
@@ -421,6 +456,7 @@ export var Messages = {
   },
   RoomPlaceBlock: class {
     constructor(layer, x, y, id, args) {
+      this.messageType = 5 /* PlaceBlock */;
       this.layer = layer;
       this.x = x;
       this.y = y;
@@ -439,16 +475,32 @@ export var Messages = {
   },
   RoomChat: class {
     constructor(chatMessage) {
+      this.messageType = 3 /* Chat */;
       this.chatMessage = chatMessage;
     }
     serialize() {
       return [this.chatMessage];
     }
   },
-  RoomCanGod: emptySerialize,
-  RoomWon: emptySerialize,
+  RoomCanGod: class {
+    constructor() {
+      this.messageType = 25 /* CanGod */;
+    }
+    serialize() {
+      return [];
+    }
+  },
+  RoomWon: class {
+    constructor() {
+      this.messageType = 27 /* Won */;
+    }
+    serialize() {
+      return [];
+    }
+  },
   RoomEffect: class {
     constructor(effect, config) {
+      this.messageType = 31 /* Effect */;
       this.effect = effect;
       this.config = config;
     }
@@ -458,6 +510,7 @@ export var Messages = {
   },
   RoomZoneCreate: class {
     constructor(type) {
+      this.messageType = 15 /* ZoneCreate */;
       this.type = type;
     }
     serialize() {
@@ -466,6 +519,7 @@ export var Messages = {
   },
   RoomZoneDelete: class {
     constructor(id) {
+      this.messageType = 16 /* ZoneDelete */;
       this.id = id;
     }
     serialize() {
@@ -474,6 +528,7 @@ export var Messages = {
   },
   RoomZoneEdit: class {
     constructor(id, placingZoneArea, startX, startY, width, height) {
+      this.messageType = 17 /* ZoneEdit */;
       this.id = id;
       this.placingZoneArea = placingZoneArea;
       this.startX = startX;
@@ -487,15 +542,24 @@ export var Messages = {
   },
   RoomZoneEnter: class {
     constructor(id) {
+      this.messageType = 18 /* ZoneEnter */;
       this.id = id;
     }
     serialize() {
       return [this.id];
     }
   },
-  RoomZoneExit: emptySerialize,
+  RoomZoneExit: class {
+    constructor() {
+      this.messageType = 19 /* ZoneExit */;
+    }
+    serialize() {
+      return [];
+    }
+  },
   RoomCoinCollected: class {
     constructor(collected, x, y) {
+      this.messageType = 119 /* CoinCollected */;
       this.collected = collected;
       this.x = x;
       this.y = y;
@@ -506,6 +570,7 @@ export var Messages = {
   },
   RoomRegisterSoundEffect: class {
     constructor(target, id, rawBytes) {
+      this.messageType = 123 /* RegisterSoundEffect */;
       this.target = target;
       this.id = id;
       this.rawBytes = rawBytes;
@@ -516,6 +581,7 @@ export var Messages = {
   },
   RoomConfirmRegisterSoundEffect: class {
     constructor(id) {
+      this.messageType = 122 /* ConfirmRegisterSoundEffect */;
       this.id = id;
     }
     serialize() {
@@ -524,6 +590,7 @@ export var Messages = {
   },
   RoomConfirmSoundEffects: class {
     constructor(target) {
+      this.messageType = 120 /* ConfirmSoundEffects */;
       this.target = target;
     }
     serialize() {
@@ -532,6 +599,7 @@ export var Messages = {
   },
   RoomSetSoundEffectState: class {
     constructor(target, id, state) {
+      this.messageType = 121 /* SetSoundEffectState */;
       this.target = target;
       this.id = id;
       this.state = state;
@@ -556,7 +624,6 @@ class Client {
     this._webSocket.binaryType = 'arraybuffer';
     this._webSocket.onmessage = (event) => {
       const message = deserialize(event.data);
-      console.log("=== REC ===", message);
 
       if (this.onMessage !== undefined) {
         this.onMessage(clientSelf, message);
@@ -581,6 +648,8 @@ class Client {
       sendRoomDisconnect: () => rawSend(2 /* Lobby */, 1 /* RoomDisconnect */, []),
       sendLoadRooms: () => rawSend(2 /* Lobby */, 2 /* LoadRooms */, []),
       sendLoadStats: () => rawSend(2 /* Lobby */, 3 /* LoadStats */, []),
+      send: (message) => rawSend(2 /* Lobby */, message.messageType, message.serialize()),
+      disconnect: () => self.disconnect(),
     };
 
     lobby._handle = (message) => {
@@ -609,7 +678,11 @@ class Client {
     };
     this.lobby = lobby;
 
-    const scopeless = {};
+    const scopeless = {
+      sendNotify: (message) => rawSend(0 /* None */, 29 /* Notify */, new Messages.ScopelessNotify(message).serialize()),
+      send: (message) => rawSend(0 /* None */, message.messageType, message.serialize()),
+      disconnect: () => self.disconnect(),
+    };
     scopeless._handle = (message) => {
       switch (message.type) {
         case 23 /* SelfInfo */: {
@@ -639,7 +712,32 @@ class Client {
           }
           else {
             const room = {
-              sendInit: (timeSinceCreation) => rawSend(1 /* Room */, 0 /* Init */, new Messages.RoomInit(timeSinceCreation).serialize())
+              sendRoomPing: () => rawSend(1 /* Room */, 1 /* Ping */, new Messages.RoomPing().serialize()),
+              sendInit: (timeSinceCreation) => rawSend(1 /* Room */, 0 /* Init */, new Messages.RoomInit(timeSinceCreation).serialize()),
+              sendPlayerMove: (t0, t1, arrowKeyX, arrowKeyY, playerDistanceX, playerDistanceY, playerVelocityX, playerVelocityY, playerAccelerationX, playerAccelerationY, playerRotation, edgeXVectorA, edgeYVectorA, edgeXVectorB, edgeYVectorB, edgeLineXVectorB, edgeLineYVectorB, edgeXVectorA2, edgeYVectorA2, edgeXVectorB2, edgeYVectorB2, edgeLineXVectorB2, edgeLineYVectorB2, reactionX, reactionY, centerX, centerY, blockSide, space, pressedSpace) =>
+                rawSend(1 /* Room */, 8 /* PlayerMove */, new Messages.RoomPlayerMove(t0, t1, arrowKeyX, arrowKeyY, playerDistanceX, playerDistanceY, playerVelocityX, playerVelocityY, playerAccelerationX, playerAccelerationY, playerRotation, edgeXVectorA, edgeYVectorA, edgeXVectorB, edgeYVectorB, edgeLineXVectorB, edgeLineYVectorB, edgeXVectorA2, edgeYVectorA2, edgeXVectorB2, edgeYVectorB2, edgeLineXVectorB2, edgeLineYVectorB2, reactionX, reactionY, centerX, centerY, blockSide, space, pressedSpace)
+                  .serialize()),
+              sendPlayerGod: () => rawSend(1 /* Room */, 10 /* PlayerGod */, new Messages.RoomPlayerGod().serialize()),
+              sendPlayerSmiley: (smiley) => rawSend(1 /* Room */, 9 /* PlayerSmiley */, new Messages.RoomPlayerSmiley(smiley).serialize()),
+              snedPlaceBlock: (layer, x, y, id, args) => rawSend(1 /* Room */, 5 /* PlaceBlock */, new Messages.RoomPlaceBlock(layer, x, y, id, args).serialize()),
+              sendChat: (chatMessage) => rawSend(1 /* Room */, 3 /* Chat */, new Messages.RoomChat(chatMessage).serialize()),
+              sendCanGod: () => rawSend(1 /* Room */, 25 /* CanGod */, new Messages.RoomCanGod().serialize()),
+              sendWon: () => rawSend(1 /* Room */, 27 /* Won */, new Messages.RoomWon().serialize()),
+              sendEffect: (effect, config) => rawSend(1 /* Room */, 31 /* Effect */, new Messages.RoomEffect(effect, config).serialize()),
+              sendZoneCreate: (type) => rawSend(1 /* Room */, 15 /* ZoneCreate */, new Messages.RoomZoneCreate(type).serialize()),
+              sendZoneDelete: (id) => rawSend(1 /* Room */, 16 /* ZoneDelete */, new Messages.RoomZoneDelete(id).serialize()),
+              sendZoneEdit: (id, placingZoneArea, startX, startY, width, height) => rawSend(1 /* Room */, 17 /* ZoneEdit */, new Messages.RoomZoneEdit(id, placingZoneArea, startX, startY, width, height).serialize()),
+              sendZoneEnter: (id) => rawSend(1 /* Room */, 18 /* ZoneEnter */, new Messages.RoomZoneEnter(id).serialize()),
+              sendZoneExit: () => rawSend(1 /* Room */, 19 /* ZoneExit */, new Messages.RoomZoneExit().serialize()),
+
+              sendCoinCollected: (collected, x, y) => rawSend(1 /* Room */, 119 /* CoinCollected */, new Messages.RoomCoinCollected(collected, x, y).serialize()),
+              sendRegisterSoundEffect: (target, id, rawBytes) => rawSend(1 /* Room */, 123 /* RegisterSoundEffect */, new Messages.RoomRegisterSoundEffect(target, id, rawBytes).serialize()),
+              sendConfirmRegisterSoundEffect: (id) => rawSend(1 /* Room */, 122 /* ConfirmRegisterSoundEffect */, new Messages.RoomConfirmRegisterSoundEffect(id).serialize()),
+              sendConfirmSoundEffects: (target) => rawSend(1 /* Room */, 120 /* ConfirmSoundEffects */, new Messages.RoomConfirmSoundEffects(target).serialize()),
+              sendSetSoundEffectState: (target, id, state) => rawSend(1 /* Room */, 121 /* SetSoundEffectState */, new Messages.RoomSetSoundEffectState(target, id, state).serialize()),
+              
+              send: (message) => rawSend(1 /* World */, message.messageType, message.serialize()),
+              disconnect: () => self.lobby.sendRoomDisconnect(),
             };
             room._handle = (message) => {
               switch (message.type) {
@@ -802,8 +900,11 @@ class Client {
     return false;
   }
 
+  disconnect() {
+    this._webSocket.close();
+  }
+
   _rawSend(connectionScope, messageType, data) {
-    console.log("=== SENDING ===", { connectionScope, messageType, data });
     this._webSocket.send(serialize(connectionScope, messageType, data));
   }
 }
@@ -818,7 +919,6 @@ function serialize(scope, type, data) {
   // TODO: support variable length scope/types (for now, this will do)
   setByte(0, scope);
   setByte(1, type);
-  
 
   const indexRef = { i: 2 };
 

@@ -92,13 +92,19 @@ declare namespace EEW {
     /** @see EEW.Messages.RoomInit */
     sendInit(timeSinceCreation?: number): SendResult;
     /** @see EEW.Messages.RoomPlayerMove */
-    sendPlayerMove(playerX: number, playerY: number): SendResult;
+    sendPlayerMove(t0: number, t1: number, arrowKeyX: number, arrowKeyY: number, playerDistanceX: number,
+      playerDistanceY: number, playerVelocityX: number, playerVelocityY: number, playerAccelerationX: number,
+      playerAccelerationY: number, playerRotation: number, edgeXVectorA: number, edgeYVectorA: number,
+      edgeXVectorB: number, edgeYVectorB: number, edgeLineXVectorB: number, edgeLineYVectorB: number,
+      edgeXVectorA2: number, edgeYVectorA2: number, edgeXVectorB2: number, edgeYVectorB2: number,
+      edgeLineXVectorB2: number, edgeLineYVectorB2: number, reactionX: number, reactionY: number, centerX: number,
+      centerY: number, blockSide: number | undefined, space: boolean, pressedSpace: number): SendResult;
     /** @see EEW.Messages.RoomPlayerGod */
     sendPlayerGod(): SendResult;
     /** @see EEW.Messages.RoomPlayerSmiley */
     sendPlayerSmiley(smiley: Smiley): SendResult;
     /** @see EEW.Messages.RoomPlaceBlock */
-    sendPlaceBlock(layer: BlockLayer, x: number, y: number, id: Blocks.BlockId): SendResult;
+    sendPlaceBlock(layer: BlockLayer, x: number, y: number, id: Blocks.BlockId, args?: BlockData): SendResult;
     /** @see EEW.Messages.RoomChat */
     sendChat(chatMessage: string): SendResult;
     /** @see EEW.Messages.RoomCanGod */
@@ -120,7 +126,7 @@ declare namespace EEW {
     /** @see EEW.Messages.RoomCoinCollected */
     sendCoinCollected(collected: number, x: number, y: number): SendResult;
     /** @see EEW.Messages.RoomRegisterSoundEffect */
-    sendRegisterSoundEffect(target: Messages.PlayerTarget, id: SoundEffectId, soundEffectRawBytes: Uint8Array): SendResult;
+    sendRegisterSoundEffect(target: Messages.PlayerTarget, id: SoundEffectId, rawBytes: Uint8Array): SendResult;
     /** @see EEW.Messages.RoomConfirmRegisterSoundEffect */
     sendConfirmRegisterSoundEffect(id: SoundEffectId): SendResult;
     /** @see EEW.Messages.RoomConfirmSoundEffects */
@@ -163,6 +169,7 @@ declare namespace EEW {
   namespace Messages {
     /** Marker interface to make explicit that a message is sendable */
     interface Sendable {
+      readonly messageType: number;
       serialize(): SerializeResult;
     }
     
@@ -209,6 +216,7 @@ declare namespace EEW {
      */
     class ScopelessNotify implements ScopelessSendable {
       constructor(message?: string);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       message: string;
@@ -254,11 +262,13 @@ declare namespace EEW {
 
     class LobbyLoadRooms implements LobbySendable {
       constructor();
+      readonly messageType: number;
       serialize(): SerializeResult;
     }
 
     class LobbyRoomConnect implements LobbySendable {
       constructor(id: RoomId);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       id: RoomId;
@@ -266,11 +276,13 @@ declare namespace EEW {
 
     class LobbyRoomDisconnect implements LobbySendable {
       constructor();
+      readonly messageType: number;
       serialize(): SerializeResult;
     }
 
     class LobbyLoadStats implements LobbySendable {
       constructor();
+      readonly messageType: number;
       serialize(): SerializeResult;
     }
     
@@ -445,11 +457,13 @@ declare namespace EEW {
 
     class RoomPing implements RoomSendable {
       constructor();
+      readonly messageType: number;
       serialize(): SerializeResult;
     }
 
     class RoomInit implements RoomSendable {
       constructor(timeSinceCreation?: number);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       timeSinceCreation: number;
@@ -473,6 +487,7 @@ declare namespace EEW {
         centerX: number, centerY: number,
         blockSide: number | undefined,
         space: boolean, pressedSpace: number);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       t0: number;
@@ -509,11 +524,13 @@ declare namespace EEW {
 
     class RoomPlayerGod implements RoomSendable {
       constructor();
+      readonly messageType: number;
       serialize(): SerializeResult;
     }
 
     class RoomPlayerSmiley implements RoomSendable {
       constructor(smiley: Smiley);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       smiley: Smiley;
@@ -521,6 +538,7 @@ declare namespace EEW {
 
     class RoomPlaceBlock implements RoomSendable {
       constructor(layer: BlockLayer, x: number, y: number, id: Blocks.BlockId, args?: BlockData);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       layer: BlockLayer;
@@ -532,6 +550,7 @@ declare namespace EEW {
 
     class RoomChat implements RoomSendable {
       constructor(chatMessage: string);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       chatMessage: string;
@@ -540,17 +559,20 @@ declare namespace EEW {
     /** Sent to try enable god mode. This only works when a god mode block is placed in the room. */
     class RoomCanGod implements RoomSendable {
       constructor();
+      readonly messageType: number;
       serialize(): SerializeResult;
     }
 
     /** Sent to try and win. This only works when a win brick (crown) is placed in the room. */
     class RoomWon implements RoomSendable {
       constructor();
+      readonly messageType: number;
       serialize(): SerializeResult;
     }
 
     class RoomEffect implements RoomSendable {
       constructor(effect: Effect, config: EffectConfiguration); // TODO: give 'config' a more understandable type
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       effect: Effect;
@@ -559,6 +581,7 @@ declare namespace EEW {
 
     class RoomZoneCreate implements RoomSendable {
       constructor(type: ZoneType);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       type: ZoneType;
@@ -566,6 +589,7 @@ declare namespace EEW {
 
     class RoomZoneDelete implements RoomSendable {
       constructor(id: ZoneId);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       id: ZoneId;
@@ -573,6 +597,7 @@ declare namespace EEW {
 
     class RoomZoneEdit implements RoomSendable {
       constructor(id: ZoneId, placingZoneArea: boolean, startX: number, startY: number, width: number, height: number);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       id: ZoneId;
@@ -585,6 +610,7 @@ declare namespace EEW {
 
     class RoomZoneEnter implements RoomSendable {
       constructor(id: ZoneId);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       id: ZoneId;
@@ -592,11 +618,13 @@ declare namespace EEW {
 
     class RoomZoneExit implements RoomSendable {
       constructor();
+      readonly messageType: number;
       serialize(): SerializeResult;
     }
 
     class RoomCoinCollected implements RoomSendable, EEWSpecific {
       constructor(collected: number, x: number, y: number);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       collected: number;
@@ -610,6 +638,7 @@ declare namespace EEW {
 
     class RoomRegisterSoundEffect implements RoomSendable, EEWSpecific, TrustedBotDeveloperOnly, WorldOwnerOnly {
       constructor(target: PlayerTarget, id: SoundEffectId, rawBytes: Uint8Array);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       target: PlayerTarget;
@@ -619,6 +648,7 @@ declare namespace EEW {
 
     class RoomConfirmRegisterSoundEffect implements RoomSendable, EEWSpecific {
       constructor(id: SoundEffectId);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       id: SoundEffectId;
@@ -626,6 +656,7 @@ declare namespace EEW {
 
     class RoomConfirmSoundEffects implements RoomSendable, EEWSpecific, TrustedBotDeveloperOnly, WorldOwnerOnly {
       constructor(target: PlayerTarget);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       target: PlayerTarget;
@@ -633,6 +664,7 @@ declare namespace EEW {
 
     class RoomSetSoundEffectState implements RoomSendable, EEWSpecific, TrustedBotDeveloperOnly, WorldOwnerOnly {
       constructor(target: PlayerTarget, id: SoundEffectId, state: SoundEffectState);
+      readonly messageType: number;
       serialize(): SerializeResult;
 
       target: PlayerTarget;
