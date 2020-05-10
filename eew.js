@@ -2,7 +2,7 @@
 const EEW_utf8TextDecoder = new TextDecoder("utf8");
 const EEW_utfTextEncoder = new TextEncoder();
 
-export function createClient(auth, options, host = "wss://everybodyedits-universe.com/api/ws/") {
+function createClient(auth, options, host = "wss://everybodyedits-universe.com/api/ws/") {
   return resolveSelfInfo(_createClient(auth, options, host));
 }
 
@@ -87,7 +87,7 @@ function resolveSelfInfo(connectionPromise) {
   });
 }
 
-export class EffectData {
+class EffectData {
   constructor(effectData) {
     this.effectData = effectData;
   }
@@ -96,7 +96,7 @@ export class EffectData {
   }
 }
 
-export class SignData {
+class SignData {
   constructor(text, rotation) {
     this.text = text;
     this.rotation = rotation;
@@ -107,7 +107,7 @@ export class SignData {
   }
 }
 
-export class PortalData {
+class PortalData {
   constructor(rotation, id, target, flipped) {
     this.rotation = rotation;
     this.id = id;
@@ -161,7 +161,7 @@ class Client {
       sendLoadRooms: () => rawSend(2 /* Lobby */, 2 /* LoadRooms */, []),
       sendLoadStats: () => rawSend(2 /* Lobby */, 3 /* LoadStats */, []),
       send: (message) => rawSend(2 /* Lobby */, message.messageType, message.serialize()),
-      disconnect: () => self.disconnect(),
+      disconnect: () => clientSelf.disconnect(),
     };
 
     lobby._handle = (message) => {
@@ -208,7 +208,7 @@ class Client {
     const scopeless = {
       sendNotify: (message) => rawSend(0 /* None */, 29 /* Notify */, [message]),
       send: (message) => rawSend(0 /* None */, message.messageType, message.serialize()),
-      disconnect: () => self.disconnect(),
+      disconnect: () => clientSelf.disconnect(),
     };
     scopeless._handle = (message) => {
       const raw = message.data;
@@ -595,7 +595,7 @@ function serialize(scope, type, data) {
 
           // otherwise, it's some kind of decimal
           setByte(indexRef.i++, 3 /* double */);
-          setByte(setFloat64(i,xRef.i, value, true));
+          view.setFloat64(indexRef.i, value, true);
           indexRef.i += 8;
         }
       } break;
@@ -644,7 +644,7 @@ function serialize(scope, type, data) {
         
                   // otherwise, it's some kind of decimal
                   setByte(indexRef.i++, 3 /* double */);
-                  setByte(setFloat64(i,xRef.i, value, true));
+                  view.setFloat64(indexRef.i, value, true);
                   indexRef.i += 8;
                 }
               } break;
@@ -821,3 +821,10 @@ function _try(object, code) {
     code();
   }
 }
+
+module.exports = {
+  createClient,
+  EffectData,
+  SignData,
+  PortalData
+};
