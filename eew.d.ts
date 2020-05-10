@@ -198,7 +198,6 @@ declare namespace EEW {
 
       readonly ownedRooms: ScopelessOnSelfInfoRoom[];
     }
-    function deserializeScopelessOnSelfInfo(raw: SerializeResult): DeserializeResult<ScopelessOnSelfInfo>;
 
     /**
      * Metadata for a room that you own.
@@ -208,18 +207,6 @@ declare namespace EEW {
       readonly name: string;
       readonly plays: number;
       readonly visibility: Visibility;
-    }
-
-    /**
-     * Administrator only message. This will be sent when an administrator runs /notify <message>, * and will show up
-     * as a popup to everyone.
-     */
-    class ScopelessNotify implements ScopelessSendable {
-      constructor(message?: string);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      message: string;
     }
 
     // ======================================================================== LOBBY
@@ -234,16 +221,13 @@ declare namespace EEW {
        */
       readonly id: RoomId | undefined;
     }
-    function deserializeLobbyOnRoomConnect(raw: SerializeResult): DeserializeResult<LobbyOnRoomConnect>;
 
     interface LobbyOnRoomDisconnect extends LobbyReceiveable {
     }
-    function deserializeLobbyOnRoomDisconnect(raw: SerializeResult): DeserializeResult<LobbyOnRoomDisconnect>;
 
     interface LobbyOnLoadRooms extends LobbyReceiveable {
       readonly rooms: LobbyOnLoadRoomsRoom[];
     }
-    function deserializeLobbyOnLoadRooms(raw: SerializeResult): DeserializeResult<LobbyOnLoadRooms>;
 
     interface LobbyOnLoadRoomsRoom {
       readonly id: RoomId;
@@ -252,38 +236,10 @@ declare namespace EEW {
       readonly name: string;
       readonly plays: number;
     }
-    function deserializeLobbyOnLoadRoomsRoom(raw: SerializeResult): DeserializeResult<LobbyOnLoadRoomsRoom>;
 
     interface LobbyOnLoadStats extends LobbyReceiveable {
       readonly playersOnline: number;
       readonly roomsOnline: number;
-    }
-    function deserializeLobbyOnLoadStats(raw: SerializeResult): DeserializeResult<LobbyOnLoadStats>;
-
-    class LobbyLoadRooms implements LobbySendable {
-      constructor();
-      readonly messageType: number;
-      serialize(): SerializeResult;
-    }
-
-    class LobbyRoomConnect implements LobbySendable {
-      constructor(id: RoomId);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      id: RoomId;
-    }
-
-    class LobbyRoomDisconnect implements LobbySendable {
-      constructor();
-      readonly messageType: number;
-      serialize(): SerializeResult;
-    }
-
-    class LobbyLoadStats implements LobbySendable {
-      constructor();
-      readonly messageType: number;
-      serialize(): SerializeResult;
     }
     
     // ======================================================================== ROOMS
@@ -297,11 +253,9 @@ declare namespace EEW {
     interface RoomOnNotify extends RoomReceiveable {
       readonly message: string;
     }
-    function deserializeRoomOnNotify(raw: SerializeResult): DeserializeResult<RoomOnNotify>;
 
     interface RoomOnPong extends RoomReceiveable {
     }
-    function deserializeRoomOnPong(raw: SerializeResult): DeserializeResult<RoomOnPong>;
 
     interface RoomOnInit extends RoomReceiveable {
       readonly id: PlayerId;
@@ -319,7 +273,6 @@ declare namespace EEW {
       // TODO: handle world deserialization
       // TODO: handle zone deserialization
     }
-    function deserializeRoomOnInit(raw: SerializeResult): DeserializeResult<RoomOnInit>;
 
     interface RoomOnPlayerJoin extends RoomReceiveable {
       readonly id: PlayerId;
@@ -332,25 +285,21 @@ declare namespace EEW {
       readonly hasWon: boolean;
       readonly usernameColor: EEWSpecificData<string>;
     }
-    function deserializeRoomOnPlayerJoin(raw: SerializeResult): DeserializeResult<RoomOnPlayerJoin>;
 
     interface RoomOnChatOld extends RoomReceiveable {
       readonly username: string;
       readonly chatMessage: string;
     }
-    function deserializeRoomOnChatOld(raw: SerializeResult): DeserializeResult<RoomOnChatOld>;
 
     interface RoomOnGod extends RoomReceiveable {
       readonly id: PlayerId;
       readonly isInGodMode: boolean;
     }
-    function deserializeRoomOnGod(raw: SerializeResult): DeserializeResult<RoomOnGod>;
 
     interface RoomOnPlayerSmiley extends RoomReceiveable {
       readonly id: PlayerId;
       readonly smiley: Smiley;
     }
-    function deserializeRoomOnPlayerSmiley(raw: SerializeResult): DeserializeResult<RoomOnPlayerSmiley>;
 
     interface RoomOnPlaceBlock extends RoomReceiveable {
       readonly layer: BlockLayer;
@@ -359,40 +308,33 @@ declare namespace EEW {
       readonly id: Blocks.BlockId;
       readonly args?: BlockData;
     }
-    function deserializeRoomOnPlaceBlock(raw: SerializeResult): DeserializeResult<RoomOnPlaceBlock>;
 
     interface RoomOnChat extends RoomReceiveable {
       readonly id: PlayerId;
       readonly chatMessage: string;
     }
-    function deserializeRoomOnChat(raw: SerializeResult): DeserializeResult<RoomOnChat>;
 
     interface RoomOnChatInfo extends RoomReceiveable {
       readonly chatInfoMessage: string;
     }
-    function deserializeRoomOnChatInfo(raw: SerializeResult): DeserializeResult<RoomOnChatInfo>;
 
     interface RoomOnCanGod extends RoomReceiveable {
       readonly id: PlayerId;
       readonly canActivateGodMode: boolean;
     }
-    function deserializeRoomOnCanGod(raw: SerializeResult): DeserializeResult<RoomOnCanGod>;
 
     interface RoomOnWon extends RoomReceiveable {
       readonly id: PlayerId;
     }
-    function deserializeRoomOnWon(raw: SerializeResult): DeserializeResult<RoomOnWon>;
 
     interface RoomOnZoneCreate extends RoomReceiveable {
       readonly id: ZoneId;
       readonly type: ZoneType;
     }
-    function deserializeRoomOnZoneCreate(raw: SerializeResult): DeserializeResult<RoomOnZoneCreate>;
 
     interface RoomOnZoneDelete extends RoomReceiveable {
       readonly id: ZoneId;
     }
-    function deserializeRoomOnZoneDelete(raw: SerializeResult): DeserializeResult<RoomOnZoneDelete>;
 
     interface RoomOnZoneEdit extends RoomReceiveable {
       readonly id: ZoneId;
@@ -402,18 +344,15 @@ declare namespace EEW {
       readonly width: number;
       readonly height: number;
     }
-    function deserializeRoomOnZoneEdit(raw: SerializeResult): DeserializeResult<RoomOnZoneEdit>;
 
     interface RoomOnLimitedEdit extends RoomReceiveable {
       readonly canEdit: boolean;
     }
-    function deserializeRoomOnLimitedEdit(raw: SerializeResult): DeserializeResult<RoomOnLimitedEdit>;
 
     interface RoomOnLoadLevel extends RoomReceiveable, EEWSpecific {
       // TODO: deserialize block data
       // TODO: deserilize zone data
     }
-    function deserializeRoomOnLoadLevel(raw: SerializeResult): DeserializeResult<RoomOnLoadLevel>;
 
     interface RoomOnCoinCollected extends RoomReceiveable, EEWSpecific {
       readonly id: PlayerId;
@@ -421,256 +360,36 @@ declare namespace EEW {
       readonly x: number;
       readonly y: number;
     }
-    function deserializeRoomOnCoinCollected(raw: SerializeResult): DeserializeResult<RoomOnCoinCollected>;
 
     interface RoomOnRegisterSoundEffect extends RoomReceiveable, EEWSpecific {
       readonly id: SoundEffectId;
       readonly dataUri: string;
     }
-    function deserializeRoomOnRegisterSoundEffect(raw: SerializeResult): DeserializeResult<RoomOnRegisterSoundEffect>;
 
     interface RoomOnConfirmRegisterSoundEffect extends RoomReceiveable, EEWSpecific, WorldOwnerOnly {
       readonly playerId: PlayerId;
       readonly soundEffectId: SoundEffectId;
     }
-    function deserializeRoomOnConfirmRegisterSoundEffect(raw: SerializeResult): DeserializeResult<RoomOnConfirmRegisterSoundEffect>;
 
     interface RoomOnConfirmSoundEffects extends RoomReceiveable, EEWSpecific {
     }
-    function deserializeRoomOnConfirmSoundEffects(raw: SerializeResult): DeserializeResult<RoomOnConfirmSoundEffects>;
 
     interface RoomOnSetSoundEffectState extends RoomReceiveable, EEWSpecific {
       readonly id: SoundEffectId;
       readonly state: SoundEffectState;
     }
-    function deserializeRoomOnSetSoundEffectState(raw: SerializeResult): DeserializeResult<RoomOnSetSoundEffectState>;
 
     interface RoomOnSetZoom extends RoomReceiveable, EEWSpecific {
       readonly zoomLevel: ZoomLevel;
     }
-    function deserializeRoomOnSetZoom(raw: SerializeResult): DeserializeResult<RoomOnSetZoom>;
 
     interface RoomOnCanZoom extends RoomReceiveable, EEWSpecific {
       readonly canZoom: boolean;
-    }
-    function deserializeRoomOnCanZoom(raw: SerializeResult): DeserializeResult<RoomOnCanZoom>;
-
-    class RoomPing implements RoomSendable {
-      constructor();
-      readonly messageType: number;
-      serialize(): SerializeResult;
-    }
-
-    class RoomInit implements RoomSendable {
-      constructor(timeSinceCreation?: number);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      timeSinceCreation: number;
-    }
-
-    class RoomPlayerMove implements RoomSendable {
-      constructor(
-        /** Starting time. In mathematics, t sub 0. */ t0: number, t1: number,
-        arrowKeyX: number, arrowKeyY: number,
-        playerDistanceX: number, playerDistanceY: number,
-        playerVelocityX: number, playerVelocityY: number,
-        playerAccelerationX: number, playerAccelerationY: number,
-        playerRotation: number,
-        edgeXVectorA: number, edgeYVectorA: number,
-        edgeXVectorB: number, edgeYVectorB: number,
-        edgeLineXVectorB: number, edgeLineYVectorB: number,
-        edgeXVectorA2: number, edgeYVectorA2: number,
-        edgeXVectorB2: number, edgeYVectorB2: number,
-        edgeLineXVectorB2: number, edgeLineYVectorB2: number,
-        reactionX: number, reactionY: number,
-        centerX: number, centerY: number,
-        blockSide: number | undefined,
-        space: boolean, pressedSpace: number);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      t0: number;
-      t1: number;
-      arrowKeyX: number;
-      arrowKeyY: number;
-      playerDistanceX: number;
-      playerDistanceY: number;
-      playerVelocityX: number;
-      playerVelocityY: number;
-      playerAccelerationX: number;
-      playerAccelerationY: number;
-      playerRotation: number;
-      edgeXVectorA: number;
-      edgeYVectorA: number;
-      edgeXVectorB: number;
-      edgeYVectorB: number;
-      edgeLineXVectorB: number;
-      edgeLineYVectorB: number;
-      edgeXVectorA2: number;
-      edgeYVectorA2: number;
-      edgeXVectorB2: number;
-      edgeYVectorB2: number;
-      edgeLineXVectorB2: number;
-      edgeLineYVectorB2: number;
-      reactionX: number;
-      reactionY: number;
-      centerX: number;
-      centerY: number;
-      blockSide: number | undefined;
-      space: boolean;
-      pressedSpace: number;
-    }
-
-    class RoomPlayerGod implements RoomSendable {
-      constructor();
-      readonly messageType: number;
-      serialize(): SerializeResult;
-    }
-
-    class RoomPlayerSmiley implements RoomSendable {
-      constructor(smiley: Smiley);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      smiley: Smiley;
-    }
-
-    class RoomPlaceBlock implements RoomSendable {
-      constructor(layer: BlockLayer, x: number, y: number, id: Blocks.BlockId, args?: BlockData);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      layer: BlockLayer;
-      x: number;
-      y: number;
-      id: Blocks.BlockId;
-      args?: BlockData;
-    }
-
-    class RoomChat implements RoomSendable {
-      constructor(chatMessage: string);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      chatMessage: string;
-    }
-
-    /** Sent to try enable god mode. This only works when a god mode block is placed in the room. */
-    class RoomCanGod implements RoomSendable {
-      constructor();
-      readonly messageType: number;
-      serialize(): SerializeResult;
-    }
-
-    /** Sent to try and win. This only works when a win brick (crown) is placed in the room. */
-    class RoomWon implements RoomSendable {
-      constructor();
-      readonly messageType: number;
-      serialize(): SerializeResult;
-    }
-
-    class RoomEffect implements RoomSendable {
-      constructor(effect: Effect, config: EffectConfiguration); // TODO: give 'config' a more understandable type
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      effect: Effect;
-      config: EffectConfiguration;
-    }
-
-    class RoomZoneCreate implements RoomSendable {
-      constructor(type: ZoneType);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      type: ZoneType;
-    }
-
-    class RoomZoneDelete implements RoomSendable {
-      constructor(id: ZoneId);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      id: ZoneId;
-    }
-
-    class RoomZoneEdit implements RoomSendable {
-      constructor(id: ZoneId, placingZoneArea: boolean, startX: number, startY: number, width: number, height: number);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      id: ZoneId;
-      placingZoneArea: boolean;
-      startX: number;
-      startY: number;
-      width: number;
-      height: number;
-    }
-
-    class RoomZoneEnter implements RoomSendable {
-      constructor(id: ZoneId);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      id: ZoneId;
-    }
-
-    class RoomZoneExit implements RoomSendable {
-      constructor();
-      readonly messageType: number;
-      serialize(): SerializeResult;
-    }
-
-    class RoomCoinCollected implements RoomSendable, EEWSpecific {
-      constructor(collected: number, x: number, y: number);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      collected: number;
-      x: number;
-      y: number;
     }
 
     // todo: better names?
     type TargetEveryone = -1;
     type PlayerTarget = PlayerId | TargetEveryone;
-
-    class RoomRegisterSoundEffect implements RoomSendable, EEWSpecific, TrustedBotDeveloperOnly, WorldOwnerOnly {
-      constructor(target: PlayerTarget, id: SoundEffectId, rawBytes: Uint8Array);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      target: PlayerTarget;
-      id: number;
-      rawBytes: Uint8Array;
-    }
-
-    class RoomConfirmRegisterSoundEffect implements RoomSendable, EEWSpecific {
-      constructor(id: SoundEffectId);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      id: SoundEffectId;
-    }
-
-    class RoomConfirmSoundEffects implements RoomSendable, EEWSpecific, TrustedBotDeveloperOnly, WorldOwnerOnly {
-      constructor(target: PlayerTarget);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      target: PlayerTarget;
-    }
-
-    class RoomSetSoundEffectState implements RoomSendable, EEWSpecific, TrustedBotDeveloperOnly, WorldOwnerOnly {
-      constructor(target: PlayerTarget, id: SoundEffectId, state: SoundEffectState);
-      readonly messageType: number;
-      serialize(): SerializeResult;
-
-      target: PlayerTarget;
-      id: SoundEffectId;
-      state: SoundEffectState;
-    }
   }
 
   const enum MessageTypes {

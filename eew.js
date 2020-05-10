@@ -122,494 +122,6 @@ export class PortalData {
   }
 }
 
-const emptyDeserialize = (raw) => ({raw});
-
-export var Messages = {
-  deserializeScopelessOnSelfInfo: (raw) => {
-    const rooms = [];
-    const roomCount = raw[4];
-    for (let i = 0; i < roomCount; i++) {
-      const metaObject = raw[i + 5];
-      rooms.push({
-        id: metaObject.i,
-        name: metaObject.n,
-        plays: metaObject.p,
-        visibility: metaObject.v,
-      });
-    }
-
-    return {
-      raw,
-      username: raw[0],
-      maxEnergy: raw[1],
-      stardust: raw[2],
-      jewels: raw[3],
-
-      rooms: rooms,
-    };
-  },
-  ScopelessNotify: class {
-    constructor(message) {
-      this.messageType = 29 /* Notify */;
-      this.message = message;
-    }
-    serialize() {
-      return [this.message];
-    }
-  },
-  deserializeLobbyOnRoomConnect: (raw) => ({
-    raw,
-    id: raw[1]
-  }),
-  deserializeLobbyOnRoomDisconnect: emptyDeserialize,
-  deserializeLobbyOnLoadRooms: (raw) => {
-    let rooms = [];
-    let messagePosition = 0;
-    while (messagePosition < raw.length) {
-      const room = {};
-      room.id = raw[messagePosition++];
-      room.playersOnline = raw[messagePosition++];
-
-      console.log('des llr');
-      console.log(raw);
-      const metaObject = raw[messagePosition++];
-      room.name = metaObject.n;
-      room.plays = metaObject.p;
-      rooms.push(room);
-    }
-    return {
-      raw,
-      rooms,
-    };
-  },
-  deserializeLobbyOnLoadStats: (raw) => ({
-    raw,
-    playersOnline: raw[0],
-    roomsOnline: raw[1],
-  }),
-  LobbyLoadRooms: class {
-    constructor() {
-      this.messageType = 2 /* LoadRooms */;
-    }
-    serialize() {
-      return [];
-    }
-  },
-  LobbyRoomConnect: class {
-    constructor(id) {
-      this.messageType = 0 /* RoomConnect */;
-      this.id = id;
-    }
-    serialize() {
-      return ["world", this.id];
-    }
-  },
-  LobbyRoomDisconnect: class {
-    constructor() {
-      this.messageType = 1 /* RoomDisconnect */;
-    }
-    serialize() {
-      return [];
-    }
-  },
-  LobbyLoadStats: class {
-    constructor() {
-      this.messageType = 3 /* LoadStats */;
-    }
-    serialize() {
-      return [];
-    }
-  },
-  deserializeRoomOnNotify: (raw) => ({
-    raw,
-    message: raw[0]
-  }),
-  deserializeRoomOnPong: emptyDeserialize,
-  deserializeRoomOnInit: (raw) => ({
-    raw,
-    id: raw[0],
-    username: raw[1],
-    smiley: raw[2],
-    timeSinceCreation: raw[3],
-    playerX: raw[4],
-    playerY: raw[5],
-    roomName: raw[6],
-    roomOwnerUsername: raw[7],
-    backgroundColor: raw[8],
-    roomWidth: raw[9],
-    roomHeight: raw[10],
-  }),
-  deserializeRoomOnPlayerJoin: (raw) => ({
-    raw,
-    id: raw[0],
-    username: raw[1],
-    smiley: raw[2],
-    timeSinceCreation: raw[3],
-    playerX: raw[4],
-    playerY: raw[5],
-    isInGodMode: raw[6],
-    hasWon: raw[7],
-    usernameColor: raw[8],
-  }),
-  deserializeRoomOnChatOld: (raw) => ({
-    raw,
-    username: raw[0],
-    chatMessage: raw[1],
-  }),
-  deserializeRoomOnGod: (raw) => ({
-    raw,
-    id: raw[0],
-    isInGodMode: raw[1],
-  }),
-  deserializeRoomOnPlayerSmiley: (raw) => ({
-    raw,
-    id: raw[0],
-    smiley: raw[1],
-  }),
-  deserializeRoomOnPlaceBlock: (raw) => {
-    const result = {
-      raw,
-      layer: raw[0],
-      x: raw[1],
-      y: raw[2],
-      id: raw[3]
-    };
-
-    // not the proper way to do it - should be inspecting IDs
-    // but it's less space
-    if (raw.length === 5) {
-      result.args = new EffectData(raw[4]);
-    }
-    else if (raw.length === 6) {
-      result.args = new SignData(raw[4], raw[5]);
-    }
-    else if (raw.length === 8) {
-      result.args = new PortalData(raw[4], raw[5], raw[6], raw[7]);
-    }
-
-    return result;
-  },
-  deserializeRoomOnChat: (raw) => ({
-    raw,
-    id: raw[0],
-    chatMessage: raw[1]
-  }),
-  deserializeRoomOnChatInfo: (raw) => ({
-    raw,
-    chatInfoMessage: raw[0],
-  }),
-  deserializeRoomOnCanGod: (raw) => ({
-    raw,
-    id: raw[0],
-    canActivateGodMode: raw[1],
-  }),
-  deserializeRoomOnWon: (raw) => ({
-    raw,
-    id: raw[0]
-  }),
-  deserializeRoomOnZoneCreate: (raw) => ({
-    raw,
-    id: raw[0],
-    type: raw[1],
-  }),
-  deserializeRoomOnZoneDelete: (raw) => ({
-    raw,
-    id: raw[0],
-  }),
-  deserializeRoomOnZoneEdit: (raw) => ({
-    raw,
-    id: raw[0],
-    placingZoneArea: raw[1],
-    startX: raw[2],
-    startY: raw[3],
-    width: raw[4],
-  }),
-  deserializeRoomOnLimitedEdit: (raw) => ({
-    raw,
-    canEdit: raw[0]
-  }),
-  deserializeRoomOnLoadLevel: emptyDeserialize, // TODO
-  deserializeRoomOnCoinCollected: (raw) => ({
-    raw,
-    id: raw[0],
-    collected: raw[1],
-    x: raw[2],
-    y: raw[3],
-  }),
-  deserializeRoomOnRegisterSoundEffect: (raw) => ({
-    raw,
-    id: raw[0],
-    dataUri: raw[1],
-  }),
-  deserializeRoomOnConfirmRegisterSoundEffect: (raw) => ({
-    raw,
-    playerId: raw[0],
-    soundEffectId: raw[1]
-  }),
-  deserializeRoomOnConfirmSoundEffects: emptyDeserialize,
-  deserializeRoomOnSetSoundEffectState: (raw) => ({
-    raw,
-    id: raw[0],
-    state: raw[1]
-  }),
-  deserializeRoomOnSetZoom: (raw) => ({
-    raw,
-    zoomLevel: raw[0],
-  }),
-  deserializeRoomOnCanZoom: (raw) => ({
-    raw,
-    canZoom: raw[0],
-  }),
-  RoomPing: class {
-    constructor() {
-      this.messageType = 1 /* Ping */;
-    }
-    serialize() {
-      return [];
-    }
-  },
-  RoomInit: class {
-    constructor(timeSinceCreation) {
-      this.messageType = 0 /* Init */;
-      this.timeSinceCreation = timeSinceCreation || 0;
-    }
-    serialize() {
-      return [this.timeSinceCreation];
-    }
-  },
-  RoomPlayerMove: class {
-    constructor(
-      t0, t1,
-      arrowKeyX, arrowKeyY,
-      playerDistanceX, playerDistanceY,
-      playerVelocityX, playerVelocityY,
-      playerAccelerationX, playerAccelerationY,
-      playerRotation,
-      edgeXVectorA, edgeYVectorA,
-      edgeXVectorB, edgeYVectorB,
-      edgeLineXVectorB, edgeLineYVectorB,
-      edgeXVectorA2, edgeYVectorA2,
-      edgeXVectorB2, edgeYVectorB2,
-      edgeLineXVectorB2, edgeLineYVectorB2,
-      reactionX, reactionY,
-      centerX, centerY,
-      blockSide,
-      space, pressedSpace) {
-      this.messageType = 8 /* PlayerMove */;
-      this.t0 = t0;
-      this.t1 = t1;
-      this.arrowKeyX = arrowKeyX;
-      this.arrowKeyY = arrowKeyY;
-      this.playerDistanceX = playerDistanceX;
-      this.playerDistanceY = playerDistanceY;
-      this.playerVelocityX = playerVelocityX;
-      this.playerVelocityY = playerVelocityY;
-      this.playerAccelerationX = playerAccelerationX;
-      this.playerAccelerationY = playerAccelerationY;
-      this.playerRotation = playerRotation;
-      this.edgeXVectorA = edgeXVectorA;
-      this.edgeYVectorA = edgeYVectorA;
-      this.edgeXVectorB = edgeXVectorB;
-      this.edgeYVectorB = edgeYVectorB;
-      this.edgeLineXVectorB = edgeLineXVectorB;
-      this.edgeLineYVectorB = edgeLineYVectorB;
-      this.edgeXVectorA2 = edgeXVectorA2;
-      this.edgeYVectorA2 = edgeYVectorA2;
-      this.edgeXVectorB2 = edgeXVectorB2;
-      this.edgeYVectorB2 = edgeYVectorB2;
-      this.edgeLineXVectorB2 = edgeLineXVectorB2;
-      this.edgeLineYVectorB2 = edgeLineYVectorB2;
-      this.reactionX = reactionX;
-      this.reactionY = reactionY;
-      this.centerX = centerX;
-      this.centerY = centerY;
-      this.blockSide = blockSide;
-      this.space = space;
-      this.pressedSpace = pressedSpace;
-    }
-    serialize() {
-      return [this.t0, this.t1, this.arrowKeyX, this.arrowKeyY, this.playerDistanceX, this.playerDistanceY,
-        this.playerVelocityX, this.playerVelocityY, this.playerAccelerationX, this.playerAccelerationY,
-        this.playerRotation, this.edgeXVectorA, this.edgeYVectorA, this.edgeXVectorB, this.edgeYVectorB,
-        this.edgeLineXVectorB, this.edgeLineYVectorB, this.edgeXVectorA2, this.edgeYVectorA2, this.edgeXVectorB2,
-        this.edgeYVectorB2, this.edgeLineXVectorB2, this.edgeLineYVectorB2, this.reactionX, this.reactionY,
-        this.centerX, this.centerY, this.blockSide, this.space, this.pressedSpace
-      ];
-    }
-  },
-  RoomPlayerGod: class {
-    constructor() {
-      this.messageType = 10 /* PlayerGod */;
-    }
-    serialize() {
-      return [];
-    }
-  },
-  RoomPlayerSmiley: class {
-    constructor(smiley) {
-      this.messageType = 9 /* PlayerSmiley */;
-      this.smiley = smiley;
-    }
-    serialize() {
-      return [this.smiley];
-    }
-  },
-  RoomPlaceBlock: class {
-    constructor(layer, x, y, id, args) {
-      this.messageType = 5 /* PlaceBlock */;
-      this.layer = layer;
-      this.x = x;
-      this.y = y;
-      this.id = id;
-      this.args = args;
-    }
-    serialize() {
-      let result = [this.layer, this.x, this.y, this.id];
-
-      if (this.args !== undefined) {
-        this.args.serializeTo(result);
-      }
-
-      return result;
-    }
-  },
-  RoomChat: class {
-    constructor(chatMessage) {
-      this.messageType = 3 /* Chat */;
-      this.chatMessage = chatMessage;
-    }
-    serialize() {
-      return [this.chatMessage];
-    }
-  },
-  RoomCanGod: class {
-    constructor() {
-      this.messageType = 25 /* CanGod */;
-    }
-    serialize() {
-      return [];
-    }
-  },
-  RoomWon: class {
-    constructor() {
-      this.messageType = 27 /* Won */;
-    }
-    serialize() {
-      return [];
-    }
-  },
-  RoomEffect: class {
-    constructor(effect, config) {
-      this.messageType = 31 /* Effect */;
-      this.effect = effect;
-      this.config = config;
-    }
-    serialize() {
-      return [this.effect, this.config];
-    }
-  },
-  RoomZoneCreate: class {
-    constructor(type) {
-      this.messageType = 15 /* ZoneCreate */;
-      this.type = type;
-    }
-    serialize() {
-      return [this.type];
-    }
-  },
-  RoomZoneDelete: class {
-    constructor(id) {
-      this.messageType = 16 /* ZoneDelete */;
-      this.id = id;
-    }
-    serialize() {
-      return [this.id];
-    }
-  },
-  RoomZoneEdit: class {
-    constructor(id, placingZoneArea, startX, startY, width, height) {
-      this.messageType = 17 /* ZoneEdit */;
-      this.id = id;
-      this.placingZoneArea = placingZoneArea;
-      this.startX = startX;
-      this.startY = startY;
-      this.width = width;
-      this.height = height;
-    }
-    serialize() {
-      return [this.id, this.placingZoneArea, this.startX, this.startY, this.width, this.height];
-    }
-  },
-  RoomZoneEnter: class {
-    constructor(id) {
-      this.messageType = 18 /* ZoneEnter */;
-      this.id = id;
-    }
-    serialize() {
-      return [this.id];
-    }
-  },
-  RoomZoneExit: class {
-    constructor() {
-      this.messageType = 19 /* ZoneExit */;
-    }
-    serialize() {
-      return [];
-    }
-  },
-  RoomCoinCollected: class {
-    constructor(collected, x, y) {
-      this.messageType = 119 /* CoinCollected */;
-      this.collected = collected;
-      this.x = x;
-      this.y = y;
-    }
-    serialize() {
-      return [this.collected, this.x, this.y];
-    }
-  },
-  RoomRegisterSoundEffect: class {
-    constructor(target, id, rawBytes) {
-      this.messageType = 123 /* RegisterSoundEffect */;
-      this.target = target;
-      this.id = id;
-      this.rawBytes = rawBytes;
-    }
-    serialize() {
-      return [this.target, this.id, this.rawBytes];
-    }
-  },
-  RoomConfirmRegisterSoundEffect: class {
-    constructor(id) {
-      this.messageType = 122 /* ConfirmRegisterSoundEffect */;
-      this.id = id;
-    }
-    serialize() {
-      return [this.id];
-    }
-  },
-  RoomConfirmSoundEffects: class {
-    constructor(target) {
-      this.messageType = 120 /* ConfirmSoundEffects */;
-      this.target = target;
-    }
-    serialize() {
-      return [this.target];
-    }
-  },
-  RoomSetSoundEffectState: class {
-    constructor(target, id, state) {
-      this.messageType = 121 /* SetSoundEffectState */;
-      this.target = target;
-      this.id = id;
-      this.state = state;
-    }
-    serialize() {
-      return [this.target, this.id, this.state];
-    }
-  }
-};
-
 class Client {
   constructor(webSocket) {
     const clientSelf = this;
@@ -644,7 +156,7 @@ class Client {
 
     const rawSend = this._rawSend.bind(this);
     const lobby = {
-      sendRoomConnect: (id) => rawSend(2 /* Lobby */, 0 /* RoomConnect */, new Messages.LobbyRoomConnect(id).serialize()),
+      sendRoomConnect: (id) => rawSend(2 /* Lobby */, 0 /* RoomConnect */, ["world", id]),
       sendRoomDisconnect: () => rawSend(2 /* Lobby */, 1 /* RoomDisconnect */, []),
       sendLoadRooms: () => rawSend(2 /* Lobby */, 2 /* LoadRooms */, []),
       sendLoadStats: () => rawSend(2 /* Lobby */, 3 /* LoadStats */, []),
@@ -653,25 +165,40 @@ class Client {
     };
 
     lobby._handle = (message) => {
+      const raw = message.data;
+
       switch (message.type) {
         case 0 /* RoomConnect */: {
           if (lobby.onRoomConnect) {
-            lobby.onRoomConnect(lobby, Messages.deserializeLobbyOnRoomConnect(message.data));
+            lobby.onRoomConnect(lobby, {raw, id: raw[1]});
           }
         } break;
         case 1 /* RoomDisconnect */: {
           if (lobby.onRoomDisconnect) {
-            lobby.onRoomDisconnect(lobby, Messages.deserializeLobbyOnRoomDisconnect(message.data));
+            lobby.onRoomDisconnect(lobby, {raw});
           }
         } break;
         case 2 /* LoadRooms */: {
           if (lobby.onLoadRooms) {
-            lobby.onLoadRooms(lobby, Messages.deserializeLobbyOnLoadRooms(message.data));
+            let rooms = [];
+            let messagePosition = 0;
+            while (messagePosition < raw.length) {
+              const room = {};
+              room.id = raw[messagePosition++];
+              room.playersOnline = raw[messagePosition++];
+        
+              const metaObject = raw[messagePosition++];
+              room.name = metaObject.n;
+              room.plays = metaObject.p;
+              rooms.push(room);
+            }
+
+            lobby.onLoadRooms(lobby, {raw, rooms});
           }
         } break;
         case 3 /* LoadStats */: {
           if (lobby.onLoadStats) {
-            lobby.onLoadStats(lobby, Messages.deserializeLobbyOnLoadStats(message.data));
+            lobby.onLoadStats(lobby, {raw, playersOnline: raw[0], roomsOnline: raw[1]});
           }
         } break;
       }
@@ -679,15 +206,36 @@ class Client {
     this.lobby = lobby;
 
     const scopeless = {
-      sendNotify: (message) => rawSend(0 /* None */, 29 /* Notify */, new Messages.ScopelessNotify(message).serialize()),
+      sendNotify: (message) => rawSend(0 /* None */, 29 /* Notify */, [message]),
       send: (message) => rawSend(0 /* None */, message.messageType, message.serialize()),
       disconnect: () => self.disconnect(),
     };
     scopeless._handle = (message) => {
+      const raw = message.data;
+
       switch (message.type) {
         case 23 /* SelfInfo */: {
           if (scopeless.onSelfInfo) {
-            scopeless.onSelfInfo(scopeless, Messages.deserializeScopelessOnSelfInfo(message.data));
+            const rooms = [];
+            const roomCount = raw[4];
+            for (let i = 0; i < roomCount; i++) {
+              const metaObject = raw[i + 5];
+              rooms.push({
+                id: metaObject.i,
+                name: metaObject.n,
+                plays: metaObject.p,
+                visibility: metaObject.v,
+              });
+            }
+
+            scopeless.onSelfInfo(scopeless, {
+              raw,
+              username: raw[0],
+              maxEnergy: raw[1],
+              stardust: raw[2],
+              jewels: raw[3],
+              rooms,
+            });
           }
         } break;
       }
@@ -701,9 +249,6 @@ class Client {
     return new Promise((resolve, reject) => {
       let listener;
       listener = (sender, message) => {
-        console.log('listener got message in connectToRoom');
-        console.log(sender);
-        console.log(message);
         if (message.scope === 2 /* Lobby */ && message.type === 0 /* RoomConnect */) {
           self.removeOnMessage(listener);
 
@@ -712,148 +257,249 @@ class Client {
           }
           else {
             const room = {
-              sendRoomPing: () => rawSend(1 /* Room */, 1 /* Ping */, new Messages.RoomPing().serialize()),
-              sendInit: (timeSinceCreation) => rawSend(1 /* Room */, 0 /* Init */, new Messages.RoomInit(timeSinceCreation).serialize()),
+              sendRoomPing: () => rawSend(1 /* Room */, 1 /* Ping */, []),
+              sendInit: (timeSinceCreation) => rawSend(1 /* Room */, 0 /* Init */, [timeSinceCreation]),
               sendPlayerMove: (t0, t1, arrowKeyX, arrowKeyY, playerDistanceX, playerDistanceY, playerVelocityX, playerVelocityY, playerAccelerationX, playerAccelerationY, playerRotation, edgeXVectorA, edgeYVectorA, edgeXVectorB, edgeYVectorB, edgeLineXVectorB, edgeLineYVectorB, edgeXVectorA2, edgeYVectorA2, edgeXVectorB2, edgeYVectorB2, edgeLineXVectorB2, edgeLineYVectorB2, reactionX, reactionY, centerX, centerY, blockSide, space, pressedSpace) =>
-                rawSend(1 /* Room */, 8 /* PlayerMove */, new Messages.RoomPlayerMove(t0, t1, arrowKeyX, arrowKeyY, playerDistanceX, playerDistanceY, playerVelocityX, playerVelocityY, playerAccelerationX, playerAccelerationY, playerRotation, edgeXVectorA, edgeYVectorA, edgeXVectorB, edgeYVectorB, edgeLineXVectorB, edgeLineYVectorB, edgeXVectorA2, edgeYVectorA2, edgeXVectorB2, edgeYVectorB2, edgeLineXVectorB2, edgeLineYVectorB2, reactionX, reactionY, centerX, centerY, blockSide, space, pressedSpace)
-                  .serialize()),
-              sendPlayerGod: () => rawSend(1 /* Room */, 10 /* PlayerGod */, new Messages.RoomPlayerGod().serialize()),
-              sendPlayerSmiley: (smiley) => rawSend(1 /* Room */, 9 /* PlayerSmiley */, new Messages.RoomPlayerSmiley(smiley).serialize()),
-              snedPlaceBlock: (layer, x, y, id, args) => rawSend(1 /* Room */, 5 /* PlaceBlock */, new Messages.RoomPlaceBlock(layer, x, y, id, args).serialize()),
-              sendChat: (chatMessage) => rawSend(1 /* Room */, 3 /* Chat */, new Messages.RoomChat(chatMessage).serialize()),
-              sendCanGod: () => rawSend(1 /* Room */, 25 /* CanGod */, new Messages.RoomCanGod().serialize()),
-              sendWon: () => rawSend(1 /* Room */, 27 /* Won */, new Messages.RoomWon().serialize()),
-              sendEffect: (effect, config) => rawSend(1 /* Room */, 31 /* Effect */, new Messages.RoomEffect(effect, config).serialize()),
-              sendZoneCreate: (type) => rawSend(1 /* Room */, 15 /* ZoneCreate */, new Messages.RoomZoneCreate(type).serialize()),
-              sendZoneDelete: (id) => rawSend(1 /* Room */, 16 /* ZoneDelete */, new Messages.RoomZoneDelete(id).serialize()),
-              sendZoneEdit: (id, placingZoneArea, startX, startY, width, height) => rawSend(1 /* Room */, 17 /* ZoneEdit */, new Messages.RoomZoneEdit(id, placingZoneArea, startX, startY, width, height).serialize()),
-              sendZoneEnter: (id) => rawSend(1 /* Room */, 18 /* ZoneEnter */, new Messages.RoomZoneEnter(id).serialize()),
-              sendZoneExit: () => rawSend(1 /* Room */, 19 /* ZoneExit */, new Messages.RoomZoneExit().serialize()),
+                rawSend(1 /* Room */, 8 /* PlayerMove */, [t0, t1, arrowKeyX, arrowKeyY, playerDistanceX, playerDistanceY, playerVelocityX, playerVelocityY, playerAccelerationX, playerAccelerationY, playerRotation, edgeXVectorA, edgeYVectorA, edgeXVectorB, edgeYVectorB, edgeLineXVectorB, edgeLineYVectorB, edgeXVectorA2, edgeYVectorA2, edgeXVectorB2, edgeYVectorB2, edgeLineXVectorB2, edgeLineYVectorB2, reactionX, reactionY, centerX, centerY, blockSide, space, pressedSpace]),
+              sendPlayerGod: () => rawSend(1 /* Room */, 10 /* PlayerGod */, []),
+              sendPlayerSmiley: (smiley) => rawSend(1 /* Room */, 9 /* PlayerSmiley */, [smiley]),
+              snedPlaceBlock: (layer, x, y, id, args) => {
+                const result = [layer, x, y, id];
 
-              sendCoinCollected: (collected, x, y) => rawSend(1 /* Room */, 119 /* CoinCollected */, new Messages.RoomCoinCollected(collected, x, y).serialize()),
-              sendRegisterSoundEffect: (target, id, rawBytes) => rawSend(1 /* Room */, 123 /* RegisterSoundEffect */, new Messages.RoomRegisterSoundEffect(target, id, rawBytes).serialize()),
-              sendConfirmRegisterSoundEffect: (id) => rawSend(1 /* Room */, 122 /* ConfirmRegisterSoundEffect */, new Messages.RoomConfirmRegisterSoundEffect(id).serialize()),
-              sendConfirmSoundEffects: (target) => rawSend(1 /* Room */, 120 /* ConfirmSoundEffects */, new Messages.RoomConfirmSoundEffects(target).serialize()),
-              sendSetSoundEffectState: (target, id, state) => rawSend(1 /* Room */, 121 /* SetSoundEffectState */, new Messages.RoomSetSoundEffectState(target, id, state).serialize()),
+                if (args !== undefined) {
+                  args.serializeTo(result);
+                }
+
+                rawSend(1 /* Room */, 5 /* PlaceBlock */, result);
+              },
+              sendChat: (chatMessage) => rawSend(1 /* Room */, 3 /* Chat */, [chatMessage]),
+              sendCanGod: () => rawSend(1 /* Room */, 25 /* CanGod */, []),
+              sendWon: () => rawSend(1 /* Room */, 27 /* Won */, []),
+              sendEffect: (effect, config) => rawSend(1 /* Room */, 31 /* Effect */, [effect, config]),
+              sendZoneCreate: (type) => rawSend(1 /* Room */, 15 /* ZoneCreate */, [type]),
+              sendZoneDelete: (id) => rawSend(1 /* Room */, 16 /* ZoneDelete */, [id]),
+              sendZoneEdit: (id, placingZoneArea, startX, startY, width, height) =>
+                rawSend(1 /* Room */, 17 /* ZoneEdit */, [id, placingZoneArea, startX, startY, width, height]),
+              sendZoneEnter: (id) => rawSend(1 /* Room */, 18 /* ZoneEnter */, [id]),
+              sendZoneExit: () => rawSend(1 /* Room */, 19 /* ZoneExit */, []),
+
+              sendCoinCollected: (collected, x, y) => rawSend(1 /* Room */, 119 /* CoinCollected */, [collected, x, y]),
+              sendRegisterSoundEffect: (target, id, rawBytes) => rawSend(1 /* Room */, 123 /* RegisterSoundEffect */, [target, id, rawBytes]),
+              sendConfirmRegisterSoundEffect: (id) => rawSend(1 /* Room */, 122 /* ConfirmRegisterSoundEffect */, [id]),
+              sendConfirmSoundEffects: (target) => rawSend(1 /* Room */, 120 /* ConfirmSoundEffects */, [target]),
+              sendSetSoundEffectState: (target, id, state) => rawSend(1 /* Room */, 121 /* SetSoundEffectState */, [target, id, state]),
               
               send: (message) => rawSend(1 /* World */, message.messageType, message.serialize()),
               disconnect: () => self.lobby.sendRoomDisconnect(),
             };
             room._handle = (message) => {
+              const raw = message.data;
+
               switch (message.type) {
                 case 29 /* Notify */: {
                   if (room.onNotify) {
-                    room.onNotify(room, Messages.deserializeRoomOnNotify(message.data));
+                    room.onNotify(room, {raw, message: raw[0]});
                   }
                 } break;
                 case 2 /* Pong */: {
                   if (room.onPong) {
-                    room.onPong(room, Messages.deserializeRoomOnPong(message.data));
+                    room.onPong(room, {raw});
                   }
                 } break;
                 case 0 /* Init */: {
                   if (room.onInit) {
-                    room.onInit(room, Messages.deserializeRoomOnInit(message.data));
+                    room.onInit(room, {
+                      raw,
+                      id: raw[0],
+                      username: raw[1],
+                      smiley: raw[2],
+                      timeSinceCreation: raw[3],
+                      playerX: raw[4],
+                      playerY: raw[5],
+                      roomName: raw[6],
+                      roomOwnerUsername: raw[7],
+                      backgroundColor: raw[8],
+                      roomWidth: raw[9],
+                      roomHeight: raw[10],
+                    });
                   }
                 } break;
                 case 6 /* PlayerJoin */: {
                   if (room.onPlayerJoin) {
-                    room.onPlayerJoin(room, Messages.deserializeRoomOnPlayerJoin(message.data));
+                    room.onPlayerJoin(room, {
+                      raw,
+                      id: raw[0],
+                      username: raw[1],
+                      smiley: raw[2],
+                      timeSinceCreation: raw[3],
+                      playerX: raw[4],
+                      playerY: raw[5],
+                      isInGodMode: raw[6],
+                      hasWon: raw[7],
+                      usernameColor: raw[8],
+                    });
                   }
                 } break;
                 case 4 /* ChatOld */: {
                   if (room.onChatOld) {
-                    room.onChatOld(room, Messages.deserializeRoomOnChatOld(message.data));
+                    room.onChatOld(room, {
+                      raw,
+                      username: raw[0],
+                      chatMessage: raw[1],
+                    });
                   }
                 } break;
                 case 10 /* PlayerGod */: {
                   if (room.onGod) {
-                    room.onGod(room, Messages.deserializeRoomOnGod(message.data));
+                    room.onGod(room, {
+                      raw,
+                      id: raw[0],
+                      isInGodMode: raw[1],
+                    });
                   }
                 } break;
                 case 9 /* PlayerSmiley */: {
                   if (room.onPlayerSmiley) {
-                    room.onPlayerSmiley(room, Messages.deserializeRoomOnPlayerSmiley(message.data));
+                    room.onPlayerSmiley(room, {
+                      raw,
+                      id: raw[0],
+                      smiley: raw[1],
+                    });
                   }
                 } break;
                 case 3 /* Chat */: {
                   if (room.onChat) {
-                    room.onChat(room, Messages.deserializeRoomOnChat(message.data));
+                    room.onChat(room, {
+                      raw,
+                      id: raw[0],
+                      chatMessage: raw[1],
+                    });
                   }
                 } break;
                 case 13 /* ChatInfo */: {
                   if (room.onChatInfo) {
-                    room.onChatInfo(room, Messages.deserializeRoomOnChatInfo(message.data));
+                    room.onChatInfo(room, {
+                      raw,
+                      chatInfoMessage: raw[0],
+                    });
                   }
                 } break;
                 case 25 /* CanGod */: {
                   if (room.onCanGod) {
-                    room.onCanGod(room, Messages.deserializeRoomOnCanGod(message.data));
+                    room.onCanGod(room, {
+                      raw,
+                      id: raw[0],
+                      canActivateGodMode: raw[1],
+                    });
                   }
                 } break;
                 case 27 /* Won */: {
                   if (room.onWon) {
-                    room.onWon(room, Messages.deserializeRoomOnWon(message.data));
+                    room.onWon(room, {
+                      raw,
+                      id: raw[0]
+                    });
                   }
                 } break;
                 case 15 /* ZoneCreate */: {
                   if (room.onZoneCreate) {
-                    room.onZoneCreate(room, Messages.deserializeRoomOnZoneCreate(message.data));
+                    room.onZoneCreate(room, {
+                      raw,
+                      id: raw[0],
+                      type: raw[1],
+                    });
                   }
                 } break;
                 case 16 /* ZoneDelete */: {
                   if (room.onZoneDelete) {
-                    room.onZoneDelete(room, Messages.deserializeRoomOnZoneDelete(message.data));
+                    room.onZoneDelete(room, {
+                      raw,
+                      id: raw[0],
+                    });
                   }
                 } break;
                 case 17 /* ZoneEdit */: {
                   if (room.onZoneEdit) {
-                    room.onZoneEdit(room, Messages.deserializeRoomOnZoneEdit(message.data));
+                    room.onZoneEdit(room, {
+                      raw,
+                      id: raw[0],
+                      placingZoneArea: raw[1],
+                      startX: raw[2],
+                      startY: raw[3],
+                      width: raw[4],
+                    });
                   }
                 } break;
                 case 20 /* LimitedEdit */: {
                   if (room.onLimitedEdit) {
-                    room.onLimitedEdit(room, Messages.deserializeRoomOnLimitedEdit(message.data));
+                    room.onLimitedEdit(room, {
+                      raw,
+                      canEdit: raw[0]
+                    });
                   }
                 } break;
                 case 127 /* LoadLevel */: {
                   if (room.onLoadLevel) {
-                    room.onLoadLevel(room, Messages.deserializeRoomOnLoadLevel(message.data));
+                    room.onLoadLevel(room, {raw});
                   }
                 } break;
                 case 119 /* CoinCollected */: {
                   if (room.onCoinCollected) {
-                    room.onCoinCollected(room, Messages.deserializeRoomOnCoinCollected(message.data));
+                    room.onCoinCollected(room, {
+                      raw,
+                      id: raw[0],
+                      collected: raw[1],
+                      x: raw[2],
+                      y: raw[3],
+                    });
                   }
                 } break;
                 case 123 /* RegisterSoundEffect */: {
                   if (room.onRegisterSoundEffect) {
-                    room.onRegisterSoundEffect(room, Messages.deserializeRoomOnRegisterSoundEffect(message.data));
+                    room.onRegisterSoundEffect(room, {
+                      raw,
+                      id: raw[0],
+                      dataUri: raw[1],
+                    });
                   }
                 } break;
                 case 122 /* ConfirmRegisterSoundEffect */: {
                   if (room.onConfirmRegisterSoundEffect) {
-                    room.onConfirmRegisterSoundEffect(room, Messages.deserializeRoomOnConfirmRegisterSoundEffect(message.data));
+                    room.onConfirmRegisterSoundEffect(room, {
+                      raw,
+                      playerId: raw[0],
+                      soundEffectId: raw[1]
+                    });
                   }
                 } break;
                 case 120 /* ConfirmSoundEffects */: {
                   if (room.onConfirmSoundEffects) {
-                    room.onConfirmSoundEffects(room, Messages.deserializeRoomOnConfirmSoundEffects(message.data));
+                    room.onConfirmSoundEffects(room, {raw});
                   }
                 } break;
                 case 121 /* SetSoundEffectState */: {
                   if (room.onSetSoundEffectState) {
-                    room.onSetSoundEffectState(room, Messages.deserializeRoomOnSetSoundEffectState(message.data));
+                    room.onSetSoundEffectState(room, {
+                      raw,
+                      id: raw[0],
+                      state: raw[1]
+                    });
                   }
                 } break;
                 case 118 /* SetZoom */: {
                   if (room.onSetZoom) {
-                    room.onSetZoom(room, Messages.deserializeRoomOnSetZoom(message.data));
+                    room.onSetZoom(room, {
+                      raw,
+                      zoomLevel: raw[0],
+                    });
                   }
                 } break;
                 case 117 /* CanZoom */: {
                   if (room.onCanZoom) {
-                    room.onCanZoom(room, Messages.deserializeRoomOnCanZoom(message.data));
+                    room.onCanZoom(room, {
+                      raw,
+                      canZoom: raw[0],
+                    });
                   }
                 } break;
               }
