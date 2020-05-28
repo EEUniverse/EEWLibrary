@@ -1,6 +1,8 @@
 {
   "name": "eew",
-  "version": "1.0.0",
+  "version": "0.1.1",
+  "main": "eew.js",
+  "module": "eew.js",
   "description": "Official EEW Botting library.",
   "main": "eew.js",
   "scripts": {
